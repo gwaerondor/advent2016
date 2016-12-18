@@ -8,8 +8,8 @@
 
 run(File) ->
     Rooms = scan_rooms(File),
-    Valid = [ Room || Room <- Rooms, is_valid_room(Room) ].
-%%    lists:foldl(fun(Room, Sum) -> Sum + Room#room.sector end, 0, Valid).
+    Valid = [ Room || Room <- Rooms, is_valid_room(Room) ],
+    lists:foldl(fun(Room, Sum) -> Sum + Room#room.sector end, 0, Valid).
 
 scan_rooms(File) ->
     {ok, Bin} = file:read_file(File),
