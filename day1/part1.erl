@@ -1,4 +1,4 @@
--module(day1).
+-module(part1).
 -export([run/1]).
 
 run(File) ->
@@ -16,7 +16,6 @@ calculate_position([], _, Position) ->
     Position;
 calculate_position([{Turn, Steps} | Rest], OldFacing, OldPosition) ->
     Facing = turn(OldFacing, Turn),
-    io:format("Started at ~p, Turned ~s, now facing ~p, walking ~p steps~n", [OldPosition, [Turn], Facing, Steps]), 
     Position = move(Steps, Facing, OldPosition),
     calculate_position(Rest, Facing, Position).
 
