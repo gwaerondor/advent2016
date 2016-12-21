@@ -1,4 +1,4 @@
--module(part1).
+-module(day11).
 -export([run/1]).
 -define(MOVE_COST, 2).
 -define(AVOIDED_BACKTRACK, 3).
