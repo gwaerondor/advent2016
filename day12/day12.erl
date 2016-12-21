@@ -1,11 +1,11 @@
--module(part1).
--export([run/1]).
+-module(day12).
+-export([run/2]).
 -define(INIT_STATE, [{"a", 0}, {"b", 0}, {"c", 0}, {"d", 0}]).
+-define(INIT_STATE_2, [{"a", 0}, {"b", 0}, {"c", 1}, {"d", 0}]).
 
-
-run(File) ->
+run(File, Part) ->
     Instructions = parse_instructions(File),
-    execute(Instructions).
+    execute(Instructions, Part).
 
 parse_instructions(File) ->
     {ok, Bin} = file:read_file(File),
@@ -33,8 +33,10 @@ to_instruction(String) ->
 	    {jump, Cond, Steps}
     end.
 
-execute(Instructions) ->
-    execute(Instructions, 1, ?INIT_STATE).
+execute(Instructions, 1) ->
+    execute(Instructions, 1, ?INIT_STATE);
+execute(Instructions, 2) ->
+    execute(Instructions, 1, ?INIT_STATE_2).
 
 execute(Instructions, Current, State) when Current > length(Instructions) ->
     State;
