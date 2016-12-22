@@ -1,7 +1,9 @@
--module(part1).
--export([run/1]).
+-module(day14).
+-export([run/1, hash_2017/1]).
+
 
 run(Salt) ->
+    put(pre, []),
     find(Salt, 0, []).
 
 find(Salt, N, Found) when length(Found) < 64 ->
@@ -21,7 +23,7 @@ find(_, _, Found) -> hd(Found).
 
 
 find_threes(V) ->
-    Hash = hash(V),
+    Hash = hash_2017(V),
     find_three_in_a_row(Hash).
 
 find_three_in_a_row([]) ->
@@ -37,7 +39,7 @@ next_1000_has_five(Salt, Index, To_find) ->
 next_1000_has_five(_, Index, Index, _) ->
     false;
 next_1000_has_five(Salt, Index, Current, To_find) ->
-    Hash = hash(Salt ++ integer_to_list(Current)),
+    Hash = hash_2017(Salt ++ integer_to_list(Current)),
     case are_there_five_in_a_row(Hash, To_find) of
 	true ->
 	    true;
@@ -57,6 +59,21 @@ hash(Value) ->
     Bin = list_to_binary(Value),
     Encrypted = crypto:hash(md5, Bin),
     bin_to_hex(Encrypted).
+
+hash_2017(Value) ->
+    Pre_hashed = get(pre),
+    case proplists:get_value(Value, Pre_hashed) of
+	undefined ->
+	    H = lists:foldl(fun(_, Acc) ->
+				    hash(Acc)
+			    end,
+			    Value,
+			    lists:seq(0,2016)),
+	    put(pre, [{Value, H} | Pre_hashed]),
+	    H;
+	X ->
+	    X
+    end.
 
 %% bin_to_hex credit: stack overflow user jmuc from this thread:
 %% stackoverflow.com/questions/3768197/erlang-ioformatting-a-binary-to-hex
