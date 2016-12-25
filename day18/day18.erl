@@ -26,13 +26,6 @@ to_tile($.) ->
 to_tile($^) ->
     trap.
 
-to_string([]) ->
-    [];
-to_string([trap|R]) ->
-    [$^ | to_string(R)];
-to_string([safe|R]) ->
-    [$. | to_string(R)].
-
 get_next(L) ->
     [next(N, L) || N <- lists:seq(1, length(L))].
 
