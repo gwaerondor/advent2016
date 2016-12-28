@@ -15,7 +15,7 @@ run(File) ->
     Part_2 = lists:foldl(fun(I, Acc) ->
 				 revert_instruction(I, Acc)
 			 end, ?SCRAMBLED, lists:reverse(Instructions)),
-    io:format("[UNFINISHED: Solution to part 2: ~p]~n", [Part_2]).
+    io:format("Solution to part 2: ~p~n", [Part_2]).
 				 
 r(Instruction, String) ->
     apply_instruction(Instruction, String).
@@ -81,12 +81,7 @@ apply_instruction({swap_letters, A, B}, String) ->
     apply_instruction({swap_pos, From, To}, String);
 apply_instruction({rotate_relative, Letter}, String) ->
     S = string:chr(String, hd(Letter)),
-    Steps = case S > 4 of
-		true ->
-		    S + 1;
-		false ->
-		    S
-	    end,
+    Steps = get_steps(S),
     Instruction = {rotate_right, Steps},
     apply_instruction(Instruction, String);
 apply_instruction({rotate_right, Steps}, String) ->
@@ -130,12 +125,52 @@ insert_at(N, Element, [H|R]) ->
     [H | insert_at(N - 1, Element, R)].
     
 %%% --------------------------------------------------------
-
 revert_instruction(I = {swap_letters, _, _}, String) ->
     apply_instruction(I, String);
+revert_instruction(I = {swap_pos, _, _}, String) ->
+    apply_instruction(I, String);
 revert_instruction({rotate_right, Steps}, String) ->
-    apply_instruction({rotate_left, Steps}, String);
+    rotate_left(String, Steps);
 revert_instruction({rotate_left, Steps}, String) ->
-    apply_instruction({rotate_right, Steps}, String);
-revert_instruction(_, String) ->
-    String.
+    rotate_right(String, Steps);
+revert_instruction({move, From, To}, String) ->
+    move(To, From, String);
+revert_instruction({reverse, From, To}, String) ->
+    reverse_between(From, To, String);
+revert_instruction({rotate_relative, Letter}, String) ->
+    Curr = string:chr(String, hd(Letter)),    
+    Counter_rotations = get_counter_rotations(Curr),
+    rotate_left(String, Counter_rotations).
+
+get_steps(Index) ->
+    case Index > 4 of
+	true ->
+	    Index + 1;
+	false ->
+	    Index
+    end.
+
+get_counter_rotations(Current_index) ->
+    do_get_counter(Current_index, 1).
+
+do_get_counter(Index, N) ->
+    case get_target_position(N) of
+	Index ->
+	    normalise(Index - N);
+	_ ->
+	    do_get_counter(Index, N+1)
+    end.
+
+normalise(N) when N < 1 ->
+    N + 8;
+normalise(N) ->
+    N.
+
+get_target_position(1) -> 2;
+get_target_position(2) -> 4;
+get_target_position(3) -> 6;
+get_target_position(4) -> 8;
+get_target_position(5) -> 3;
+get_target_position(6) -> 5;
+get_target_position(7) -> 7;
+get_target_position(8) -> 1.
