@@ -1,6 +1,6 @@
 -module(day22).
 -export([run/0]).
--record(fs, {coord, size, used, avail, useproc}).
+-record(fs, {coord, size, used, avail}).
 run() ->
     FS = parse_file_systems("input.txt"),
     length(lists:flatten(find_all_pairs(FS, FS))).
@@ -13,25 +13,18 @@ parse_file_systems(File) ->
     lists:zip(lists:seq(1, length(FSs)), FSs).
 
 make_file_system(Description) ->
-    [Name, Size, Used, Avail, UseProc] = string:tokens(Description, " "),
+    [Name, Size, Used, Avail, _] = string:tokens(Description, " "),
     #fs{coord = parse_coord(Name),
 	size = parse_capacity(Size),
 	used = parse_capacity(Used),
-	avail = parse_capacity(Avail),
-	useproc = parse_proc(UseProc)}.
+	avail = parse_capacity(Avail)}.
+
+parse_capacity(Str) ->
+    list_to_integer(Str -- "T").
 
 parse_coord(Name) ->
     [X, Y] = get_match_groups(Name, "x(\\d+)-y(\\d+)"),
     {list_to_integer(X), list_to_integer(Y)}.    
-
-parse_capacity(Str) ->
-    parse_without("T", Str).
-
-parse_proc(Str) ->
-    parse_without("%", Str).
-
-parse_without(Exclude, Str) ->
-    list_to_integer(Str -- Exclude).
 
 get_match_groups(Subject, Regex) ->
     case re:run(Subject, Regex, [{capture, all, list}]) of
@@ -62,5 +55,3 @@ find_pairs({SN, Source}, [{TN, Target} | T]) when SN /= TN ->
     end;
 find_pairs(S, [_|T]) ->
     find_pairs(S, T).
-
-	
